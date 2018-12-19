@@ -5,9 +5,15 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   after_initialize :generate_token
+  validate :validate_email
 
   private
     def generate_token
       self.api_token ||= SecureRandom.hex if new_record?
+    end
+    def validate_email
+      if User.where(email: email).exists?
+        errors.add(:email, :invalid)
+      end
     end
 end
